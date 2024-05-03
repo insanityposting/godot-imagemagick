@@ -2,7 +2,7 @@
 
 import modules_builders
 import os
-
+from subprocess import run, PIPE
 Import("env")
 
 env_modules = env.Clone()
@@ -53,7 +53,12 @@ if env["tests"]:
         test_headers,
         env.Run(modules_builders.generate_modules_tests),
     )
+magick_libs_config = run(['/bin/bash', 'Magick++-config', '--libs'], stdout=PIPE, stderr=PIPE )
+magick_libs_flags = magick_libs_config.stdout
 
+magick_libs_flags = magick_libs_flags.decode().strip().split()
+
+env.Append(LIBS=magick_libs_flags)
 # libmodules.a with only register_module_types.
 # Must be last so that all libmodule_<name>.a libraries are on the right side
 # in the linker command.

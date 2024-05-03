@@ -1,0 +1,30 @@
+# SCsub
+from subprocess import run, PIPE
+Import('env')
+
+magick_config = run(['/bin/bash', 'Magick++-config', '--cppflags'], stdout=PIPE, stderr=PIPE )
+magick_flags = magick_config.stdout
+
+# Decode the byte string into a string
+magick_flags = magick_flags.decode().strip().split()
+
+print("Magick++ flags: ", magick_flags) #  '--ldflags', '--libs'
+
+# Add the flags to the environment
+env.Append(CPPFLAGS=magick_flags)
+
+magick_ld_config = run(['/bin/bash', 'Magick++-config', '--cppflags'], stdout=PIPE, stderr=PIPE )
+magick_ld_flags = magick_config.stdout
+
+magick_ld_flags = magick_ld_flags.decode().strip().split()
+
+env.Append(CCFLAGS=magick_ld_flags)
+
+magick_libs_config = run(['/bin/bash', 'Magick++-config', '--libs'], stdout=PIPE, stderr=PIPE )
+magick_libs_flags = magick_libs_config.stdout
+
+magick_libs_flags = magick_libs_flags.decode().strip().split()
+
+env.Append(LIBS=magick_libs_flags)
+
+env.add_source_files(env.modules_sources, "*.cpp") # Add all cpp files to the build
